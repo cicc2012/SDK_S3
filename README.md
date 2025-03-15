@@ -10,6 +10,14 @@ This demo guides you through setting up an S3 event notification for an existing
 3. **Existing Lambda Function**: Have an existing Lambda function.
 4. **AWS Credentials**: Ensure your AWS credentials are properly configured.
 
+### **Step 0: Java Extension in VS Code**
+You can install Extension Pack for Java in VS Code, to set up the build tool.
+In the welcome page after the installation of this extension, you can also install a JDK.
+Once this is done, you can open a teminal, and use the following command to set up your account.
+```bash
+aws configure
+```
+
 ### **Step 1: Set Up the Project**
 
 1. Create a new Java project in your preferred IDE.

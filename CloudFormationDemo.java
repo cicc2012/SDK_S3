@@ -6,7 +6,6 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
@@ -20,27 +19,18 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.AddPermissionRequest;
 import software.amazon.awssdk.services.lambda.model.AddPermissionResponse;
-// import software.amazon.awssdk.services.lambda.model.GetFunctionRequest;
-// import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
 import software.amazon.awssdk.services.s3.S3Client;
-// import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.Event;
 import software.amazon.awssdk.services.s3.model.FilterRule;
 import software.amazon.awssdk.services.s3.model.FilterRuleName;
 import software.amazon.awssdk.services.s3.model.LambdaFunctionConfiguration;
-// import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
-// import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.NotificationConfiguration;
 import software.amazon.awssdk.services.s3.model.NotificationConfigurationFilter;
 import software.amazon.awssdk.services.s3.model.PutBucketNotificationConfigurationRequest;
 import software.amazon.awssdk.services.s3.model.PutBucketPolicyRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
-// import software.amazon.awssdk.services.s3.model.NotificationConfigurationFilter;
 import software.amazon.awssdk.services.s3.model.S3KeyFilter;
-// import software.amazon.awssdk.services.s3.model.FilterRule;
-// import software.amazon.awssdk.services.s3.model.FilterRuleName;
-
 
 public class CloudFormationDemo {
     private static final Logger logger = LoggerFactory.getLogger(CloudFormationDemo.class);
@@ -200,23 +190,8 @@ public class CloudFormationDemo {
                 .region(region)
                 // .credentialsProvider(ProfileCredentialsProvider.create())
                 .build();
-        // LambdaClient lambdaClient = LambdaClient.builder()
-        //         .region(region)
-        //         .credentialsProvider(ProfileCredentialsProvider.create())
-        //         .build();
-
-        // Create a request to get function details
-        // GetFunctionRequest request = GetFunctionRequest.builder()
-        //             .functionName(lambdaFunctionName)
-        //             .build();
         
-        try {
-            // Call the getFunction API
-            // GetFunctionResponse response = lambdaClient.getFunction(request);
-
-            // Get the function ARN
-            // String functionArn = response.configuration().functionArn();
-            
+        try {           
             // Configure event notification with filters
             FilterRule prefixRule = FilterRule.builder()
                     .name(FilterRuleName.PREFIX)
@@ -254,21 +229,6 @@ public class CloudFormationDemo {
 
             s3Client.putBucketNotificationConfiguration(notificationRequest);
             s3Client.putBucketPolicy(policyRequest);
-
-            // Grant S3 permission to invoke Lambda
-            // String sourceAccount = accountId;
-            // String sourceArn = "arn:aws:s3:::" + bucketName;
-
-            // AddPermissionRequest permissionRequest = AddPermissionRequest.builder()
-            //         .functionName(lambdaFunctionName)
-            //         .statementId("s3-invoke-function")
-            //         .action("lambda:InvokeFunction")
-            //         .principal("s3.amazonaws.com")
-            //         .sourceAccount(sourceAccount)
-            //         .sourceArn(sourceArn)
-            //         .build();
-
-            // lambdaClient.addPermission(permissionRequest);
 
             logger.info("S3 event notification set up successfully!");
             logger.info("Function ARN: {}", functionArn);
@@ -311,24 +271,23 @@ public class CloudFormationDemo {
 
         CloudFormationDemo demo = new CloudFormationDemo();
         
-        // AWS Region (choose the correct region)
-        Region region = Region.US_EAST_1;
-        String bucketName = "uco-cicc-media";
-        String accoundId = "590183882567";
+        Region region = Region.US_EAST_1;   // AWS Region (choose the correct region)
+        String bucketName = "uco-cicc-media";   // Replace with your bucket name
+        String accoundId = "590183882567";  // Replace with your account ID
 
         // Define S3 URL of the CloudFormation template
-        String backendUrl = "https://uco-cicc-media.s3.us-east-1.amazonaws.com/proj3/proj3_backend.yml";
-        String frontendUrl = "https://uco-cicc-media.s3.us-east-1.amazonaws.com/proj3/proj3_frontkend.yml";
-        String amplifyUrl = "https://uco-cicc-media.s3.us-east-1.amazonaws.com/proj3/proj3_amplify.yml";
+        String backendUrl = "https://uco-cicc-media.s3.us-east-1.amazonaws.com/proj3/proj3_backend.yml";    // Replace with your S3 URL
+        String frontendUrl = "https://uco-cicc-media.s3.us-east-1.amazonaws.com/proj3/proj3_frontkend.yml"; // Replace with your S3 URL
+        String amplifyUrl = "https://uco-cicc-media.s3.us-east-1.amazonaws.com/proj3/proj3_amplify.yml";    // Replace with your S3 URL
         
         // Define the stack name
-        String backendStackName = "cicc-participation-backend";
-        String frontendStackName = "cicc-participation-frontend";
-        String amplifyStackName = "cicc-participation-amplify";
+        String backendStackName = "cicc-participation-backend"; // Replace with your stack name
+        String frontendStackName = "cicc-participation-frontend";   // Replace with your stack name 
+        String amplifyStackName = "cicc-participation-amplify"; // Replace with your stack name
 
         Scanner scanner = new Scanner(System.in);
 
-        /
+        // Step 1: Deploy the backend stack
         System.out.println("*****************   STEP 1 : backend ***********************");
         demo.deployCloudFormationTemplate(region, backendUrl, backendStackName); 
 
@@ -380,22 +339,5 @@ public class CloudFormationDemo {
         String keyName = scanner.nextLine(); // The key (name) you want for the file in S3
         demo.uploadS3File(bucketName, keyName, filePath, region);
         scanner.close();
-
-        /* 
-        try (S3Client s3Client = S3Client.create()) {
-
-            // List all buckets in your account
-            ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
-            ListBucketsResponse response = s3Client.listBuckets(listBucketsRequest);
-
-            // Print the bucket names
-            System.out.println("S3 Buckets:");
-            for (Bucket bucket : response.buckets()) {
-                System.out.println(bucket.name());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 }

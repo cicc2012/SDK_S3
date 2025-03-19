@@ -122,6 +122,7 @@ public class CloudFormationDemo {
 
     
     private void setEventNotification(String accountId, Region region, String bucketName, String lambdaFunctionName, String functionArn, String amplifyAppId) {
+        // Add permission to allow S3 to invoke the Lambda function
         try {
             // Add permission to allow S3 to invoke the Lambda function
             LambdaClient lambdaClient = LambdaClient.builder()
@@ -143,7 +144,8 @@ public class CloudFormationDemo {
             logger.error("Failed to give permission to s3 to trigger the lambda function: {}", e.getMessage());
         }
 
-        // Build the bucket policy with the dynamic amplifyAppId
+        // Build the bucket policy with the "dynamic" amplifyAppId
+        String sourceArn = "arn%3Aaws%3Aamplify%3A" + region.id() +"%3A" + accountId + "%3Aapps%2F" + amplifyAppId + "%2Fbranches%2Fdev";
         String policyJson = String.format("{\n" +
                 "  \"Version\": \"2012-10-17\",\n" +
                 "  \"Statement\": [\n" +
@@ -159,15 +161,10 @@ public class CloudFormationDemo {
                 "        \"StringEquals\": {\n" +
                 "          \"aws:SourceAccount\": \"%s\",\n" +
                 "          \"s3:prefix\": \"proj3/index.zip\",\n" +
-                "          \"aws:SourceArn\": \"arn:aws:amplify:us-east-1:%s:apps/%s/branches/dev\"\n" +
+                "          \"aws:SourceArn\": \"%s\"\n" +
                 "        }\n" +
                 "      }\n" +
-                "    }\n" +
-                "  ]\n" +
-                "},\n" +
-                "{\n" +
-                "  \"Version\": \"2012-10-17\",\n" +
-                "  \"Statement\": [\n" +
+                "    },\n" +
                 "    {\n" +
                 "      \"Sid\": \"AllowAmplifyToReadPrefix_%s_dev_proj3_index_zip\",\n" +
                 "      \"Effect\": \"Allow\",\n" +
@@ -175,28 +172,29 @@ public class CloudFormationDemo {
                 "        \"Service\": \"amplify.amazonaws.com\"\n" +
                 "      },\n" +
                 "      \"Action\": \"s3:GetObject\",\n" +
-                "      \"Resource\": \"arn:aws:s3:::%s\",\n" +
+                "      \"Resource\": \"arn:aws:s3:::%s/proj3/index.zip\",\n" +
                 "      \"Condition\": {\n" +
                 "        \"StringEquals\": {\n" +
                 "          \"aws:SourceAccount\": \"%s\",\n" +
-                "          \"aws:SourceArn\": \"arn:aws:amplify:us-east-1:%s:apps/%s/branches/dev\"\n" +
+                "          \"aws:SourceArn\": \"%s\"\n" +
                 "        }\n" +
                 "      }\n" +
+                "    },\n" +
+                "    {\n" +
+		        "   	\"Effect\": \"Deny\",\n" +
+		        "   	\"Principal\": \"*\",\n" +
+		        "   	\"Action\": \"s3:*\",\n" +
+		        "   	\"Resource\": \"arn:aws:s3:::%s/*\",\n" +
+		        "   	\"Condition\": {\n" +
+		        "   		\"Bool\": {\n" +
+		        "   			\"aws:SecureTransport\": \"false\"\n" +
+		        "   		}\n" +
+		        "   	}\n" +
                 "    }\n" +
                 "  ]\n" +
-                "},\n" +
-                "{\n" +
-		        "	\"Effect\": \"Deny\",\n" +
-		        "	\"Principal\": \"*\",\n" +
-		        "	\"Action\": \"s3:*\",\n" +
-		        "	\"Resource\": \"arn:aws:s3:::%s/*\",\n" +
-		        "	\"Condition\": {\n" +
-		        "		\"Bool\": {\n" +
-		        "			\"aws:SecureTransport\": \"false\"\n" +
-		        "		}\n" +
-		        "	}\n" +
-                "}", amplifyAppId, bucketName, accountId, accountId,amplifyAppId,
-                 amplifyAppId, bucketName, accountId, accountId, amplifyAppId, bucketName);
+                "}", amplifyAppId, bucketName, accountId, sourceArn,
+                 amplifyAppId, bucketName, accountId, sourceArn, bucketName);
+        System.out.println("Policy: " + policyJson);
 
         S3Client s3Client = S3Client.builder()
                 .region(region)
@@ -291,8 +289,8 @@ public class CloudFormationDemo {
 
             // Create a PutObjectRequest to upload the file
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)        // Specify the bucket name
-                    .key(keyName)              // Specify the S3 object key (file name in the bucket)
+                    .bucket(bucketName) 
+                    .key(keyName) 
                     .build();
 
             // Upload the file
@@ -311,7 +309,6 @@ public class CloudFormationDemo {
 
     public static void main(String[] args) {
 
-        
         CloudFormationDemo demo = new CloudFormationDemo();
         
         // AWS Region (choose the correct region)
@@ -330,11 +327,14 @@ public class CloudFormationDemo {
         String amplifyStackName = "cicc-participation-amplify";
 
         Scanner scanner = new Scanner(System.in);
+
+        /
         System.out.println("*****************   STEP 1 : backend ***********************");
         demo.deployCloudFormationTemplate(region, backendUrl, backendStackName); 
 
+        // Step 2 and 3 can be improved by using CI-CD pipeline
         System.out.println("*****************   STEP 2 : frontend ***********************");
-        System.out.println("You need to process the output values from the backend stack: ");
+        System.out.println("You need to process the output values from the backend stack: include the api gateway endpoint's URL in the frontend stack: ");
         System.out.println("Please enter \"Yes\" when you are ready to deploy the frontend stack: ");
         String response = scanner.nextLine();
         if (!response.equalsIgnoreCase("Yes")) {
@@ -346,7 +346,7 @@ public class CloudFormationDemo {
         }
 
         System.out.println("*****************   STEP 3 : final deployment ***********************");
-        System.out.println("You need to process the output values from the frontend stack: ");
+        System.out.println("You need to process the output values from the frontend stack: change the deployment lambda function to include the amplify app id in the amplify stack: ");
         System.out.println("Please enter \"Yes\" when you are ready to deploy the amplify stack: ");
         response = scanner.nextLine();
         if (!response.equalsIgnoreCase("Yes")) {
@@ -360,6 +360,8 @@ public class CloudFormationDemo {
         // set event notification
         System.out.println("*****************   STEP 4 : event setting ***********************");
         System.out.println("You need to process the output values from the amplify stack: ");
+
+        // You can avoid this manual step by saving the output values of cloudformation stacks into DynamoDB store
         System.out.println("Please enter the name of the lambda function to deploy the web app in amplify, when you are ready to deploy the amplify stack: ");
 
         String lambdaFunctionName = scanner.nextLine();

@@ -13,14 +13,18 @@ This demo guides you through setting up an S3 event notification for an existing
 ### **Step 0: Java Extension in VS Code**
 You can install Extension Pack for Java in VS Code, to set up the build tool.
 In the welcome page after the installation of this extension, you can also install a JDK.
-Once this is done, you can open a teminal, and use the following command to set up your account.
+
+#### AWS credentials
+You can use the credentials of your AWS root user, or a new IAM user (you can reference [IAM_USER](IAM_USER.md)). You can download the access key of your user: you can find the *Security credentials* panel under this user. Then click *Create Access Key* to create one: make sure you can see the *access key id* and *secret access key*.
+Once this is done, you can open a terminal, and use the following command to set up your account.
 ```bash
 aws configure
 ```
+In the terminal, you can paste the *access key id* and *secret access key*.
 
 ### **Step 1: Set Up the Project**
 
-1. Create a new Java project in your preferred IDE.
+1. Create a new Java project in your IDE, e.g., VS Code.
 2. Add the AWS SDK for Java dependency to your `pom.xml` if using Maven:
 ```xml
 <dependency>
@@ -34,7 +38,7 @@ aws configure
     <version>2.20.26</version>
 </dependency>
 ```
-
+You can use the example [pom.xml](pom.xml).
 
 ### **Step 2: Create the Java Class**
 

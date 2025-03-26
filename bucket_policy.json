@@ -1,0 +1,47 @@
+{
+	"Version": "2008-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowAmplifyToListPrefix_d3206ee02w4j67_dev_proj3_index_zip",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "amplify.amazonaws.com"
+			},
+			"Action": "s3:ListBucket",
+			"Resource": "arn:aws:s3:::uco-cicc-media",
+			"Condition": {
+				"StringEquals": {
+					"s3:prefix": "proj3/index.zip",
+					"aws:SourceArn": "arn%3Aaws%3Aamplify%3Aus-east-1%3A590183882567%3Aapps%2Fd3206ee02w4j67%2Fbranches%2Fdev",
+					"aws:SourceAccount": "590183882567"
+				}
+			}
+		},
+		{
+			"Sid": "AllowAmplifyToReadPrefix_d3206ee02w4j67_dev_proj3_index_zip",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "amplify.amazonaws.com"
+			},
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::uco-cicc-media/proj3/index.zip",
+			"Condition": {
+				"StringEquals": {
+					"aws:SourceArn": "arn%3Aaws%3Aamplify%3Aus-east-1%3A590183882567%3Aapps%2Fd3206ee02w4j67%2Fbranches%2Fdev",
+					"aws:SourceAccount": "590183882567"
+				}
+			}
+		},
+		{
+			"Effect": "Deny",
+			"Principal": "*",
+			"Action": "s3:*",
+			"Resource": "arn:aws:s3:::uco-cicc-media/*",
+			"Condition": {
+				"Bool": {
+					"aws:SecureTransport": "false"
+				}
+			}
+		}
+	]
+}

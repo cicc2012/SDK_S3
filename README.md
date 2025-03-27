@@ -48,9 +48,13 @@ In the terminal, you can paste the *access key id* and *secret access key*.
 ```
 You can use the example [pom.xml](pom.xml).
 
-### **Step 2: Create the Java Class**
+### **Step 2: Create the Java Program**
 
-Create a new Java class named `S3EventNotificationSetup.java` with the following code:
+Create a new Java Program to set the event notification for you S3 bucket. You can find this in method 
+`private void setEventNotification(String accountId, Region region, String bucketName, String lambdaFunctionName, String functionArn, String amplifyAppId)`
+in the [given program](CloudFormationDemo.java).
+
+Here is part of the sample code (you need to make necessary changes based on your account information):
 
 ```java
 import software.amazon.awssdk.services.s3.S3Client;
@@ -120,17 +124,8 @@ public class S3EventNotificationSetup {
 1. Upload a file to your S3 bucket using the AWS CLI or Console:
 
 ```bash
-aws s3 cp test-file.txt s3://your-existing-bucket-name/
+aws s3 cp index.zip s3://your-existing-bucket-name/your-path
 ```
 
 2. Check the CloudWatch logs for your Lambda function to verify it was triggered.
 
----
-
-## **Key Points**
-
-1. **AWS SDK for Java**: Used for creating the S3 event notification.
-2. **Lambda Permissions**: Ensure S3 has permission to invoke your Lambda function.
-3. **Testing**: Verify the setup by checking CloudWatch logs.
-
-By following this demo, you'll successfully configure an S3 event notification for an existing bucket using the AWS SDK for Java, linking it to an existing Lambda function.

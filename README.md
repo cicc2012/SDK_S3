@@ -17,12 +17,18 @@ You can install Extension Pack for Java in VS Code, to set up the build tool.
 In the welcome page after the installation of this extension, you can also install a JDK.
 
 #### AWS credentials
-You can use the credentials of your AWS root user, or a new IAM user (you can reference [IAM_USER](IAM_USER.md)). You can download the access key of your user: you can find the *Security credentials* panel under this user. Then click *Create Access Key* to create one: make sure you can see the *access key id* and *secret access key*.
+Install AWS CLI, if you haven't. Here is a link for [download and instruction](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+You can use the credentials of your AWS root user, or a new IAM user (you can reference [IAM_USER](IAM_USER.md)). **Please note: if you would like to use AWS CDK as well. Please reference the [demo for CDK](https://github.com/cicc2012/IaC-demo), to configure the permissions needed.**
+
+You can download the access key of your user: you can find the *Security credentials* panel under this user. Then click *Create Access Key* to create one: make sure you can see the *access key id* and *secret access key*.
 Once this is done, you can open a terminal, and use the following command to set up your account.
 ```bash
 aws configure
 ```
 In the terminal, you can paste the *access key id* and *secret access key*.
+
+**Please keep your access key protected,e.g., do not sync it to cloud storage, do not save it as plain text, etc.**
 
 ### **Step 1: Set Up the Project**
 

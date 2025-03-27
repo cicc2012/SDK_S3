@@ -16,6 +16,8 @@ Granting full access to AWS services exposes resources to:
 
 Below is a refined IAM policy tailored to specific tasks for a web application that uses Amplify, Lambda, API Gateway, S3, and Textract.
 
+Please note: if you would like to use AWS CDK as well. Please reference the [demo for CDK](https://github.com/cicc2012/IaC-demo), to configure the permissions needed.
+
 ### 1. AWS Amplify Permissions
 
 Grant only the permissions needed to:

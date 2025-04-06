@@ -5,6 +5,10 @@ This demo guides you through setting up an S3 event notification for an existing
 
 Please **note**: the [provided program](CloudFormationDemo.java) includes the entire stack, not just for seting up the bucket object event. If you only need to set up the event notification, you can comment / revmoe other code in the main function.
 
+**The Diagram of this demo**
+
+![diagram](sdk.png)
+
 ### **Prerequisites**
 
 1. **AWS SDK for Java**: Ensure you have the AWS SDK for Java (version 2.x) installed.
